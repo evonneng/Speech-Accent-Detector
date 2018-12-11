@@ -4,7 +4,10 @@ import os
 import numpy as np
 import pandas as pd
 
+from sklearn import tree
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
 
 RATE = 8000
 N_MFCC = 12
@@ -26,21 +29,26 @@ def to_mfcc(wav):
 	'''
 	return librosa.feature.mfcc(y=wav, sr=RATE, n_mfcc=N_MFCC)
 
+def get_mfcc_from_filename(filename):
+	'''
+
+	'''
+	wav = get_wav(filename)
+	mfcc = to_mfcc(wav).flatten()
+
+	return mfcc[:NUM_FEATURES]
+
 def add_dir_to_df(dir_name, X):
 	'''
 	dir_name: the directory to add files to dataframe
 	X: features dataframe to add to
 	'''
-	filenames = os.listdir(dir_name)
-	print(len(filenames))
 
-	for i in range(X.shape[0], X.shape[0] + len(filenames)):
-		filename = filenames[i - X.shape[0]]
+	filenames = map(lambda rel_path: dir_name + "/" + rel_path, os.listdir(dir_name))
+	mfccs = list(map(get_mfcc_from_filename, filenames))
 
-		wav = get_wav(dir_name + "/" + filename)
-		mfcc = to_mfcc(wav).flatten()
-
-		X.loc[i] = mfcc[:NUM_FEATURES]
+	new_rows = pd.DataFrame(mfccs, columns=X.columns)
+	return pd.concat([X, new_rows])
 
 
 def add_category_to_labels(dir_name, label, y):
@@ -50,41 +58,31 @@ def add_category_to_labels(dir_name, label, y):
 	y: predictions dataframe to add to
 	'''
 	files = os.listdir(dir_name)
-	print(len(files))
-
 	num_rows_to_add = len(files)
-	for i in range(y.shape[0], num_rows_to_add + y.shape[0]):
-		y.loc[i] = label
 
+	row_labels = pd.DataFrame(np.ones(num_rows_to_add) * label, columns=y.columns)
+	return pd.concat([y, row_labels])
 
 if __name__ == '__main__':
 	X = pd.DataFrame(columns=list(range(NUM_FEATURES)))
 	y = pd.DataFrame(columns=["y"])
 
-	add_dir_to_df("../recordings_wav/c", X)
-	add_category_to_labels("../recordings_wav/c", '0', y)
+	dirs = ["../recordings_wav/hindi", "../recordings_wav/cantonese"]
 
-	print(X.shape)
-	print(y.shape)
+	for label, d in enumerate(dirs):
+		X = add_dir_to_df(d, X)
+		y = add_category_to_labels(d, label, y)
+	y = y.values.ravel()
 
-	add_dir_to_df("../recordings_wav/d", X)
-	add_category_to_labels("../recordings_wav/d", '1', y)
 
-	print(X.shape)
-	print(y.shape)
+	print("done making dataframe, now making model...")
+	clf = LogisticRegression(random_state=0, solver='lbfgs', multi_class='multinomial')
 
-	clf = LogisticRegression(random_state=0, solver='lbfgs',
-                          multi_class='multinomial').fit(X, y)
-
-	test_val = to_mfcc(get_wav("../recordings_wav/gujarati1.wav")).flatten()
-	prediction = clf.predict(test_val)
+	clf.fit(X, y)
+	test_val = get_mfcc_from_filename("../recordings_wav/mandarin1.wav").reshape(1, -1)
+	prediction = clf.predict_proba(test_val)
 
 	print(prediction)
-
-
-
-
-
 
 
 
