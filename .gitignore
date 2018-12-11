@@ -1,1 +1,4 @@
 env
+*.zip
+*.wav
+.DS_Store
