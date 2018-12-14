@@ -19,7 +19,7 @@ def get_wav(filename):
 	filename: file name to load
 	return: numpy array down-sampled wav file
 	'''
-	y, sr = librosa.load('../audio/{}'.format(filename))
+	y, sr = librosa.load('{}'.format(filename))
 	return librosa.core.resample(y=y, orig_sr=sr, target_sr=RATE, scale=True)
 
 def to_mfcc(wav):
