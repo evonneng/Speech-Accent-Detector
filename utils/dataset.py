@@ -21,7 +21,7 @@ class ActionDataset(Dataset):
         self.language = language
 
     def __len__(self):
-        return len(self.trajs)
+        return int(len(self.trajs) * 0.7)
 
     def __getitem__(self, idx):
         idx = idx + 1

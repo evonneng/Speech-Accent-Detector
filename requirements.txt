@@ -2,3 +2,4 @@ keras
 pandas
 librosa
 numpy
+torch
