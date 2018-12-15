@@ -1,3 +1,8 @@
+**/*.pyc
+**/*.txt
+**/*.ark
+**/*.scp
+kaldi-io/
 env
 *.zip
 *.wav
