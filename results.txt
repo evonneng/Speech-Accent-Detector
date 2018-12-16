@@ -1,0 +1,6 @@
+4 languages (english, spanish, arabic, french), random forest, static prosodic features - 0.66
+3 languages (english, spanish, arabic), random forest, static prosodic features - 0.71
+2 languages (english, spanish), random forest, static prosodic features - 0.90
+
+4 languages (english, spanish, arabic, french), random forest, mfcc - 0.67
+2 languages (english, spanish), random forest, mfcc - 0.82
