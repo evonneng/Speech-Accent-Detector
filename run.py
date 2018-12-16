@@ -1,7 +1,7 @@
 from models import *
 import os, torch
 import argparse, pickle
-from utils import setup
+from utils import rf as setup
 import numpy as np
 
 dirname = os.path.dirname(os.path.abspath(__file__))

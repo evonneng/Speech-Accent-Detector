@@ -245,8 +245,8 @@ def prosody_dynamic(audio, size_frame=0.03,size_step=0.01,minf0=60,maxf0=350, vo
 
 
 
-    if flag_plots:
-        plot_pros(data_audio,fs,F0,seg_voiced,Ev,featvec,f0v)
+    # if flag_plots:
+    #     plot_pros(data_audio,fs,F0,seg_voiced,Ev,featvec,f0v)
 
     return np.asarray(featvec)
 
@@ -586,10 +586,23 @@ def intonation_duration(audio,size_step=0.01,minf0=60,maxf0=350,stol=0.150, flag
     return avgF0slopes,stdF0slopes,MSEF0, SVU,VU,UVU,VVU,VS,US,URD,VRD,URE,VRE,PR, maxvoicedlen,maxunvoicedlen,minvoicedlen,minunvoicedlen,rvuv,energyslope,RegCoefenergy,msqerrenergy,RegCoeff0,meanNeighborenergydiff,stdNeighborenergydiff, F0_rec, pitch_z, venergy,uenergy
 
 def get_dynamic_features(audio_file):
-    return prosody_dynamic(audio_file)
+    NUM_FEATURES_PROSODIC_D = 611
+
+    print("currently processing dynamic prosodic features from audio file: {}".format(audio_file))
+
+    features = prosody_dynamic(audio_file).flatten()
+    print("num dynamic features: {}".format(str(len(features))))
+
+    # need to add more features, put in avg of other features
+    if len(features) < NUM_FEATURES_PROSODIC_D:
+        num_feats_to_add = NUM_FEATURES_PROSODIC_D - len(features)
+        print("need to add {} more features".format(num_feats_to_add))
+        np.concatenate([features, np.ones(num_feats_to_add) * np.mean(features)])
+
+    return features[:NUM_FEATURES_PROSODIC_D]
 
 def get_static_features(audio_file):
-    print("currently processing audio file: {}".format(audio_file))
+    print("currently processing static prosodic features from audio file: {}".format(audio_file))
 
     flag_plots = False
 
