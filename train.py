@@ -20,7 +20,7 @@ def cycle(seq):
             yield elem
 
 
-def train(max_iter, languages, batch_size=10):
+def train(max_iter, numlang, languages, batch_size=10):
     '''
 	This is the main training function, feel free to modify some of the code, but it
 	should not be required to complete the assignment.
@@ -32,9 +32,9 @@ def train(max_iter, languages, batch_size=10):
 
     data = {}
     iterator = {}
-    for language in languages:
-        data[language] = dataset.load(os.path.join(dirname, 'recordings_wav', language), language, num_workers=0, crop=100, batch_size=batch_size)
-        iterator[language] = cycle(data[language])
+    for i in range(numlang):
+        data[languages[i]] = dataset.load(os.path.join(dirname, 'recordings_wav', languages[i]), languages[i], num_workers=0, crop=100, batch_size=batch_size)
+        iterator[languages[i]] = cycle(data[languages[i]])
 
     try:
         model = Model()
@@ -52,8 +52,8 @@ def train(max_iter, languages, batch_size=10):
 
     loss = nn.BCEWithLogitsLoss()
     for t in range(max_iter):
-        for idx, language in enumerate(languages):
-            batch_mfcc = next(iterator[language]).float()
+        for idx in range(numlang):
+            batch_mfcc = next(iterator[languages[i]]).float()
             batch_labels = np.tile(np.array([1.0 if i == idx else 0.0 for i in range(len(languages))]), (batch_mfcc.shape[0], batch_mfcc.shape[1], 1))
             batch_labels = torch.from_numpy(batch_labels).float()
             model.train()
@@ -64,7 +64,7 @@ def train(max_iter, languages, batch_size=10):
             optimizer.step()
 
             if t % 10 == 0:
-                print('[%5d - %s] t_loss = %f' % (t, language, t_loss_val))
+                print('[%5d - %s] t_loss = %f' % (t, languages[i], t_loss_val))
 
     # Save the trained model
     torch.save(model.state_dict(), os.path.join(dirname, 'model.th'))  # Do NOT modify this line
@@ -73,8 +73,9 @@ def train(max_iter, languages, batch_size=10):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--max_iter', type=int, default=5000)
+    parser.add_argument('-l', '--numlang', type=int, default=5)
     args = parser.parse_args()
 
     print ('[I] Start training')
-    train(args.max_iter, ['arabic', 'english', 'french', 'spanish', 'russian'])
+    train(args.max_iter, args.numlang, ['english', 'spanish', 'french', 'arabic', 'russian'])
     print ('[I] Training finished')
