@@ -8,7 +8,7 @@ from torch import nn, optim
 
 # Use the util.load() function to load your dataset
 from utils import dataset
-from utils import setup
+from utils import rf as setup
 from models import *
 
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -75,6 +75,8 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--max_iter', type=int, default=5000)
     parser.add_argument('-l', '--numlang', type=int, default=5)
     args = parser.parse_args()
+
+    print("num langs: {}".format(args.numlang))
 
     print ('[I] Start training')
     train(args.max_iter, args.numlang, ['english', 'spanish', 'french', 'arabic', 'russian'])

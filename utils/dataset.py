@@ -7,7 +7,7 @@ import numpy as np
 import torch
 
 from torch.utils.data import DataLoader, Dataset
-from .setup import *
+from .rf import *
 
 class ActionDataset(Dataset):
     def __init__(self, data_dir, language, crop=None):

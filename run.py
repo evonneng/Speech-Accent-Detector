@@ -32,10 +32,11 @@ def evaluate(filename, numlang):
 		total_correct = 0
 		total = 0
 		for idx in range(numlang):
-			language_dir = os.path.join(dirname, 'recordings_wav', languages[i])
+			language_dir = os.path.join(dirname, 'recordings_wav', languages[idx])
 			files = os.listdir(language_dir)
 			language_correct = 0
 			language_total = 0
+			print("starting lang...")
 			for f in files:
 				wav = setup.get_wav(os.path.join(language_dir, f))
 				mfcc = np.transpose(setup.to_mfcc(wav))
@@ -46,7 +47,7 @@ def evaluate(filename, numlang):
 				if prediction == idx:
 					language_correct += 1
 					total_correct += 1
-			print(languages[i] + ': %d/%d (%4f)' % (language_correct, language_total, language_correct / language_total))
+			print(languages[idx] + ': %d/%d (%4f)' % (language_correct, language_total, language_correct / language_total))
 		print('Overall: %d/%d (%4f)' % (total_correct, total, total_correct / total))
 
 if __name__ == '__main__':
@@ -54,4 +55,5 @@ if __name__ == '__main__':
 	parser.add_argument('-f', '--filename')
 	parser.add_argument('-l', '--numlang')
 	args = parser.parse_args()
-	evaluate(args.filename, args.numlang)
+	evaluate(args.filename, int(args.numlang))
+

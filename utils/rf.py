@@ -11,7 +11,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.decomposition import PCA
 
-from prosody import get_dynamic_features, get_static_features
+# from prosody import get_dynamic_features, get_static_features
 
 RATE = 8000
 N_MFCC = 12
